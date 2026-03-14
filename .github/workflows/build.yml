@@ -1,0 +1,39 @@
+name: Build
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up QMK
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Install QMK CLI
+        run: pip install qmk
+
+      - name: Install QMK dependencies
+        run: |
+          qmk setup --yes
+          sudo apt-get install -y gcc-avr avr-libc
+
+      - name: Register userspace
+        run: qmk config user.overlay_dir="$GITHUB_WORKSPACE"
+
+      - name: Build firmware
+        run: qmk compile -kb keyhive/maypad -km frc
+
+      - name: Upload firmware artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: keyhive_maypad_frc
+          path: keyhive_maypad_frc.hex
+          if-no-files-found: error
