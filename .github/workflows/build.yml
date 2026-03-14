@@ -20,10 +20,11 @@ jobs:
       - name: Install QMK CLI
         run: pip install qmk
 
+      - name: Install AVR toolchain
+        run: sudo apt-get install -y gcc-avr avr-libc binutils-avr avrdude
+
       - name: Install QMK dependencies
-        run: |
-          qmk setup --yes
-          sudo apt-get install -y gcc-avr avr-libc
+        run: qmk setup --yes
 
       - name: Register userspace
         run: qmk config user.overlay_dir="$GITHUB_WORKSPACE"
